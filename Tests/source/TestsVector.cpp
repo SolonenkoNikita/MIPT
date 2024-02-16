@@ -18,8 +18,7 @@ public:
 TEST(Construct_test_count_int, GetTest)
 {
 	MyVector<std::string> v{ "abc", "adc", "adefr", "xuy" };
-	MyVector<std::string> v1{ "a" };
-	v.swap(v1);
+	MyVector<std::string> v1{"a"};
 
 	v1 = v;
 	for (auto x : v1)

@@ -107,6 +107,8 @@ public:
 			{
 				std::allocator_traits<Allocate>::construct(alloc_, data_ + i, v[i]);
 			}
+			capacity_ = v.capacity_;
+			size_ = v.size_;
 		}
 		catch (...)
 		{
@@ -139,20 +141,30 @@ public:
 		}
 	}
 
-	MyVector<T, Allocate>& operator =(MyVector<T, Allocate>&& v) noexcept
+	MyVector<T, Allocate>& operator = (MyVector<T, Allocate>&& v) noexcept
 	{
-		for (size_t i = 0; i < size_; i++)
+		/*for (size_t i = 0; i < size_; i++)
 		{
 			std::allocator_traits<Allocate>::destroy(alloc_, data_ + i);
 		}
-		std::allocator_traits<Allocate>::deallocate(alloc_, data_, capacity_);
+		std::allocator_traits<Allocate>::deallocate(alloc_, data_, capacity_);*/
 		if (std::allocator_traits<Allocate>::propagate_on_container_move_assignment::value && alloc_ != v.alloc_)
 		{
 			alloc_ = std::move(v.alloc_);
+			reserve(v.size_);
+			for (size_t i = 0; i < v.size_; i++)
+			{
+				std::allocator_traits<Allocate>::construct(alloc_, data_ + i, std::move(v[i]));
+			}
+			capacity_ = v.capacity_;
+			size_ = v.size_;
 		}
-		data_ = v.data_;
-		size_ = v.size_;
-		capacity_ = v.capacity_;
+		else
+		{
+			data_ = v.data_;
+			size_ = v.size_;
+			capacity_ = v.capacity_;
+		}
 		v.data_ = nullptr;
 		v.size_ = 0;
 		v.capacity_ = 0;
