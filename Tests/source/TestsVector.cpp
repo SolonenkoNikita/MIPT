@@ -20,7 +20,7 @@ TEST(Construct_test_count_int, GetTest)
 	MyVector<std::string> v{ "abc", "adc", "adefr", "xuy" };
 	MyVector<std::string> v1{"a"};
 
-	v1 = v;
+	v1 = { "b", "c", "d" };
 	for (auto x : v1)
 	{
 		std::cout << x << ' ';

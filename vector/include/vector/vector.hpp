@@ -143,20 +143,19 @@ public:
 
 	MyVector<T, Allocate>& operator = (MyVector<T, Allocate>&& v) noexcept
 	{
-		/*for (size_t i = 0; i < size_; i++)
-		{
-			std::allocator_traits<Allocate>::destroy(alloc_, data_ + i);
-		}
-		std::allocator_traits<Allocate>::deallocate(alloc_, data_, capacity_);*/
 		if (std::allocator_traits<Allocate>::propagate_on_container_move_assignment::value && alloc_ != v.alloc_)
 		{
+			for (size_t i = 0; i < size_; i++)
+			{
+				std::allocator_traits<Allocate>::destroy(alloc_, data_ + i);
+			}
+			std::allocator_traits<Allocate>::deallocate(alloc_, data_, capacity_);
 			alloc_ = std::move(v.alloc_);
 			reserve(v.size_);
 			for (size_t i = 0; i < v.size_; i++)
 			{
 				std::allocator_traits<Allocate>::construct(alloc_, data_ + i, std::move(v[i]));
 			}
-			capacity_ = v.capacity_;
 			size_ = v.size_;
 		}
 		else
@@ -168,6 +167,30 @@ public:
 		v.data_ = nullptr;
 		v.size_ = 0;
 		v.capacity_ = 0;
+		return *this;
+	}
+
+	MyVector<T, Allocate> operator = (std::initializer_list<T> l)
+	{
+		size_ = 0, capacity_ = 0;
+		size_t i = 0;
+		try
+		{
+			reserve(l.size());
+			for (auto it = l.begin(), ite = l.end(); it != ite; ++it, ++i)
+			{
+				std::allocator_traits<Allocate>::construct(alloc_, data_ + i, *it);
+			}
+			size_ = l.size();
+		}
+		catch (...)
+		{
+			for (size_t j = 0; j < i; j++)
+			{
+				std::allocator_traits<Allocate>::destroy(alloc_, data_ + j);
+			}
+			std::allocator_traits<Allocate>::deallocate(alloc_, data_, l.size());
+		}
 		return *this;
 	}
 
