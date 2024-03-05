@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <vector/vector.hpp>
 
+#include <vector>
+
 TEST(Construct_test_default_int, GetTest)
 {
 	MyVector<int> v;
@@ -15,8 +17,44 @@ public:
 	A() = delete;
 };
 
+struct pup : public std::exception {};
+
+struct lup : public std::exception {};
+
+struct S
+{
+	~S()
+	{
+		throw pup();
+	}
+};
+
+void f()
+{
+	try
+	{
+		S s;
+		throw lup();
+	}
+
+	catch (const std::exception&) {}
+
+	catch (pup&) {}
+
+	catch(lup&) {}
+}
+
 TEST(Construct_test_count_int, GetTest)
 {
+	int a = 85, b = 70;
+	(a ^= b);
+	std::cout << a << ' ' << b << '\n';
+	(b ^= a);
+	std::cout << a << ' ' << b << '\n';
+	(a ^= b);
+	std::cout << a  << ' ' << b << '\n';
+	/*std::vector<int> v2;
+	std::vector<int> v3 = v2;
 	MyVector<std::string> v{ "abc", "adc", "adefr", "xuy" };
 	MyVector<std::string> v1{"a"};
 
@@ -25,7 +63,7 @@ TEST(Construct_test_count_int, GetTest)
 	{
 		std::cout << x << ' ';
 	}
-	for (auto it = v.cbegin(), ite = v.cend(); it != ite; ++it) {}
+	for (auto it = v.cbegin(), ite = v.cend(); it != ite; ++it) {}*/
 }
 
 //TEST(Construct_test_init_list_int, GetTest)
