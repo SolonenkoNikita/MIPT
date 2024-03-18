@@ -40,7 +40,7 @@ public:
 		}
 	}
 
-	template<typename InputIt>
+	template<typename InputIt, typename enable = std::iterator_traits<InputIt>::difference_type>
 	MyVector(InputIt first, InputIt last, const Allocate& alloc = Allocate()) : alloc_(alloc)
 	{
 		size_t count = std::distance(first, last), i = 0;
@@ -89,8 +89,11 @@ public:
 
 	MyVector<T, Allocate>& operator = (const MyVector<T, Allocate>& v)
 	{
-		if (!std::allocator_traits<Allocate>::is_alwais_equal() && 
-			std::allocator_traits<Allocate>::propagate_on_container_copy_assignment::value && alloc_ != v.alloc_)
+		if (&v == this)
+		{
+			return *this;
+		}
+		if (std::allocator_traits<Allocate>::propagate_on_container_copy_assignment::value && alloc_ != v.alloc_)
 		{
 			clear();
 			std::allocator_traits<Allocate>::deallocate(alloc_, data_, capacity_);
@@ -143,6 +146,10 @@ public:
 
 	MyVector<T, Allocate>& operator = (MyVector<T, Allocate>&& v) noexcept
 	{
+		if (&v == this)
+		{
+			return *this;
+		}
 		if (std::allocator_traits<Allocate>::propagate_on_container_move_assignment::value && alloc_ != v.alloc_)
 		{
 			for (size_t i = 0; i < size_; ++i)

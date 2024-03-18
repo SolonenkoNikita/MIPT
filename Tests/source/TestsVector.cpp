@@ -44,15 +44,16 @@ void f()
 	catch(lup&) {}
 }
 
+int diff(size_t s1, size_t s2) { return s1 - s2; }
+
+template <typename It>
+std::iterator_traits<It>::difference_type diff(It s1, It s2) { return std::distance(s1, s2); }
 TEST(Construct_test_count_int, GetTest)
 {
-	int a = 85, b = 70;
-	(a ^= b);
-	std::cout << a << ' ' << b << '\n';
-	(b ^= a);
-	std::cout << a << ' ' << b << '\n';
-	(a ^= b);
-	std::cout << a  << ' ' << b << '\n';
+	MyVector<int> v(1, 2);
+	//MyVector<int> f(5, 6);
+	diff(5, 6);
+	//std::cout << a  << ' ' << b << '\n';
 	/*std::vector<int> v2;
 	std::vector<int> v3 = v2;
 	MyVector<std::string> v{ "abc", "adc", "adefr", "xuy" };
